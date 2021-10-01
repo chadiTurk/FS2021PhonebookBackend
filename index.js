@@ -9,6 +9,8 @@ const cors = require('cors')
 
 app.use(cors())
 
+app.use(express.static('build'))
+
 
 morgan.token('post', (request) => {
     if (request.method === 'POST')
@@ -45,11 +47,6 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
-
-app.get('/',(req,res)=>{
-  res.json(persons)
-})
-
 app.get('/api/persons', (request,response) =>{
     response.json(persons)
 })

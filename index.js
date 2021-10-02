@@ -64,12 +64,23 @@ app.get('/api/persons/:id',(request,response)=>{
     }
 })
 
-app.delete('/api/persons/:id',(request,response)=>{
-    const id = Number(request.params.id)
+app.delete('/api/persons/:_id',(request,response)=>{
+ 
+    console.log(request.params)
 
-    persons = persons.filter(person => person.id !== id)
+    Person.findByIdAndRemove(request.params._id).then(result =>{
+      console.log('delete success')
+      response.status(204).end()
+    })
+    .catch(error =>{
+      response.status(404).end()
+    })
 
+    persons = persons.filter(person => person._id !== request.params_id)
+
+    response.json(persons)
     response.status(204).end()
+    
 })
 
   
@@ -94,9 +105,6 @@ app.post('/api/persons',(req,res) =>{
      console.log(persons)
      res.json(persons)
    })
-
-    
-
 })
 
 const unknownEndpoint = (request, response) => {

@@ -1,14 +1,17 @@
 const { response } = require('express')
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
+const Person = require('./models/Person')
+
+require('dotenv').config()
+
 app.use(express.json())
-
 const cors = require('cors')
-
+const { Mongoose } = require('mongoose')
 app.use(cors())
-
 app.use(express.static('build'))
 
 
@@ -25,30 +28,12 @@ morgan.token('post', (request) => {
 
 
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-app.get('/api/persons', (request,response) =>{
-    response.json(persons)
+let persons = []
+ app.get('/api/persons', (request,response) =>{
+    Person.find({}).then(result =>{
+      persons = result
+      response.json(persons)
+    })
 })
 
 app.get('/info',(request,response)=>{
@@ -81,13 +66,6 @@ app.delete('/api/persons/:id',(request,response)=>{
     response.status(204).end()
 })
 
-
-const generateId = () => {
-    const maxId = persons.length > 0
-      ? Math.max(...persons.map(n => n.id))
-      : 0
-    return maxId + 1
-  }
   
 app.post('/api/persons',(req,res) =>{
     const body = req.body
@@ -99,15 +77,19 @@ app.post('/api/persons',(req,res) =>{
           error: 'content missing' 
         })}
 
-    const newPerson = {
-        id:generateId(),
+    const newPerson = new Person({
         name:body.name,
         number:body.number
-    }
+    })
 
-    persons = persons.concat(newPerson)
+   newPerson.save().then(savedPerson =>{
+     console.log(savedPerson)
+     persons.push(savedPerson)
+     console.log(persons)
+     res.json(persons)
+   })
 
-    res.json(persons)
+    
 
 })
 

@@ -31,19 +31,25 @@ morgan.token('post', (request) => {
 let persons = []
  app.get('/api/persons', (request,response) =>{
     Person.find({}).then(result =>{
+      console.log(result.length)
       persons = result
       response.json(persons)
     })
 })
 
 app.get('/info',(request,response)=>{
-    const numberOfPeople = persons.length
+  
+    let numberOfPeople 
 
-    response.send(`
-    <p> Phonebook has info for ${numberOfPeople} people </p>
-    <p> ${new Date} </p>
-    `)
-    response
+    Person.find({}).then(result =>{
+      console.log(result.length)
+      numberOfPeople = result.length
+      response.send(`
+      <p> Phonebook has info for ${numberOfPeople} people </p>
+      <p> ${new Date} </p>
+      `)
+    })
+
 })
 
 
